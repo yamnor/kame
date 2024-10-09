@@ -158,7 +158,7 @@ const App = () => {
       } else {
       const key = await saveContent(encodedContent);
       url = `${window.location.origin}/${key}`;
-      increasePixela();
+      //increasePixela();
     }
     if (url) {
       navigator.clipboard.writeText(url);
