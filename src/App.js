@@ -99,9 +99,7 @@ const App = () => {
   const [content, setContent] = useState('🐢');
   const [isCopied, setIsCopied] = useState(false);
 
-  console.log(process.env.HASH_SERVER_URL);
-
-  const serverUrl = `${process.env.HASH_SERVER_URL}`;
+  const serverUrl = process.env.REACT_APP_HASH_SERVER_URL;
   const exampleKey = "FvBKNW"
 
   const saveContent = async (hash) => {
@@ -126,7 +124,7 @@ const App = () => {
   };
 
   const increasePixela = async () => {
-    const webhookUrl = `https://pixe.la/v1/users/yamnor/webhooks/${process.env.WEBHOOK_HASH}`;
+    const webhookUrl = `https://pixe.la/v1/users/yamnor/webhooks/${process.env.REACT_APP_WEBHOOK_HASH}`;
     await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -160,7 +158,7 @@ const App = () => {
       } else {
       const key = await saveContent(encodedContent);
       url = `${window.location.origin}/${key}`;
-      //increasePixela();
+      increasePixela();
     }
     if (url) {
       navigator.clipboard.writeText(url);
