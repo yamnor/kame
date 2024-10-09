@@ -99,7 +99,7 @@ const App = () => {
   const [content, setContent] = useState('🐢');
   const [isCopied, setIsCopied] = useState(false);
 
-  const serverUrl = 'https://oden.yamnor.me';
+  const serverUrl = `${process.env.HASH_SERVER_URL}`;
   const exampleKey = "FvBKNW"
 
   const saveContent = async (hash) => {
@@ -121,6 +121,16 @@ const App = () => {
     if (hash) {
       setContent(decodeContent(hash));
     }
+  };
+
+  const increasePixela = async () => {
+    const webhookUrl = `https://pixe.la/v1/users/yamnor/webhooks/${process.env.WEBHOOK_HASH}`;
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Length': '0'
+      }
+    });
   };
 
   useEffect(() => {
@@ -148,6 +158,7 @@ const App = () => {
       } else {
       const key = await saveContent(encodedContent);
       url = `${window.location.origin}/${key}`;
+      increasePixela();
     }
     if (url) {
       navigator.clipboard.writeText(url);
