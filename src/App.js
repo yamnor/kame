@@ -100,7 +100,7 @@ const App = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const serverUrl = 'https://oden.yamnor.me';
-  const exampleKey = "NTv3go"
+  const exampleKey = "FvBKNW"
 
   const saveContent = async (hash) => {
     const response = await fetch(`${serverUrl}/add`, {
@@ -136,8 +136,7 @@ const App = () => {
       }
     }
     if (!key && !hash) {
-      //loadContentByKey(exampleKey);
-      window.location.hash = "";
+      loadContentByKey(exampleKey);
     }
   }, []);
 
