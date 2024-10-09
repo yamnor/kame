@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@tippyjs/react": "^4.2.6",
+    "buffer": "^6.0.3",
     "front-matter": "^4.0.2",
     "html-react-parser": "^5.1.16",
     "lucide-react": "^0.446.0",
