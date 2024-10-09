@@ -99,6 +99,8 @@ const App = () => {
   const [content, setContent] = useState('🐢');
   const [isCopied, setIsCopied] = useState(false);
 
+  console.log(process.env.HASH_SERVER_URL);
+
   const serverUrl = `${process.env.HASH_SERVER_URL}`;
   const exampleKey = "FvBKNW"
 
