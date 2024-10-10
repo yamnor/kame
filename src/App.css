@@ -128,3 +128,15 @@ textarea {
     display: none;
   }
 }
+
+@media (max-width: 768px) {
+  div.page {
+    display: flex;
+    scroll-snap-align: start;
+  }
+  main {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+  }
+}
+
