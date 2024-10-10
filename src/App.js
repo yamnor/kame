@@ -19,6 +19,79 @@ const decodeContent = (encodedContent) => {
 
 const markdownRenderer = (content) => {
   const { attributes: frontmatter, body: markdownContent } = fm(content);
+
+  const renderer = {
+    link({ href, tokens }) {
+      const text = this.parser.parseInline(tokens);
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    },
+    paragraph({ tokens }) {
+      const text = this.parser.parseInline(tokens);
+      return `<div class="page"><p>${text}</p></div>`;
+    },
+    codespan({ tokens }) {
+      const text = this.parser.parseInline(tokens);
+      return `<code>${text}</code>`;
+    },
+    br() {
+      return '</p><p>';
+    },
+    heading({ tokens, text }) {
+      const className = `kind-${tokens.length}`;
+      return `</section><section class=${className}>`;
+    }
+  };
+
+  const tokenizer = {
+    code(src) { return; },
+    list(src) { return; },
+    hr(src) { return; },
+    table(src) { return; },
+    blockquote(src) {
+      const cap = this.rules.block.blockquote.exec(src);
+      if (cap) {
+        const content = cap[0].trim();
+        const imgMatch = /^> (https?:\/\/\S+\.(jpg|jpeg|png|gif|svg))/.exec(content);
+        if (imgMatch) {
+          const imgUrl = imgMatch[1];
+          return {
+            type: 'html',
+            raw: cap[0],
+            text: `<div class="page"><img src="${imgUrl}" alt="Image" /></div>`,
+            tokens: []
+          };
+        }
+        return;
+      }
+      return;
+    },
+    paragraph(src) {
+      const cap = /^([^\n]+(?:\n(?!blockquote|\n)[^\n]+)*)/.exec(src);
+      if (cap) {
+        const text = cap[1].trim();
+        return {
+          type: 'paragraph',
+          raw: cap[0],
+          text,
+          tokens: this.lexer.inline(text)
+        };
+      }
+    },
+    codespan(src) {
+      const cap = this.rules.inline.code.exec(src);
+      if (cap) {
+        const text = cap[2];
+        return {
+          type: 'codespan',
+          raw: cap[0],
+          text,
+          tokens: this.lexer.inline(text)
+        };
+      }
+    }
+  }
+
+  marked.use({ renderer, tokenizer });
   const htmlContent = marked(markdownContent, { gfm: true, breaks: true });
   return { frontmatter, htmlContent: parse(htmlContent) };
 };
@@ -31,6 +104,33 @@ const showSlide = (index, slides) => {
         slide.classList.add('active');
       }
     }
+  });
+};
+
+const applyThemeVariables = (themeFile) => {
+  return fetch(`/theme/${themeFile}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to load theme file');
+      }
+      return response.text();
+    })
+    .then((cssText) => {
+      const root = document.documentElement.style;
+      const regex = /--([\w-]+)\s*:\s*([^;]+);/g;
+      let match;
+      while ((match = regex.exec(cssText)) !== null) {
+        const [, varName, varValue] = match;
+        root.setProperty(`--${varName.trim()}`, varValue.trim());
+      }
+    })
+    .catch((error) => console.error('Failed to load theme file:', error));
+};
+
+const applyFrontmatterVariables = (frontmatterVariables = {}) => {
+  const root = document.documentElement.style;
+  Object.entries(frontmatterVariables).forEach(([varName, varValue]) => {
+    root.setProperty(`--${varName}`, varValue);
   });
 };
 
@@ -60,7 +160,7 @@ const ViewArea = ({ content }) => {
   }, []);
 
   useEffect(() => {
-    const paragraphs = document.querySelectorAll('p');
+    const paragraphs = document.querySelectorAll('div.page');
     slideRefs.current = Array.from(paragraphs);
   }, [parsedContent.htmlContent]);
 
@@ -72,15 +172,24 @@ const ViewArea = ({ content }) => {
   }, [currentSlide, parsedContent.htmlContent]);
 
   const {
-    size = 'var(--text-size)',
-    color = 'var(--black)',
-    background = 'white'
+    theme = 'default',
   } = parsedContent.frontmatter;
 
+  const { frontmatter } = parsedContent;
+
+  useEffect(() => {
+    const themeFile = `${theme}.css`;
+    applyThemeVariables(themeFile)
+      .then(() => {
+        applyFrontmatterVariables(frontmatter);
+      })
+      .catch((error) => console.error('Error applying theme and frontmatter:', error));
+  }, [theme, frontmatter]);
+
   return (
-    <div className="slide" style={{ fontSize: size, color: color, backgroundColor: background }}>
+    <section>
       {parsedContent.htmlContent}
-    </div>
+    </section>
   );
 };
 
@@ -90,6 +199,7 @@ const CodeArea = ({ content, setContent }) => {
       value={content}
       onChange={(e) => setContent(e.target.value)}
       placeholder="Type or paste markdown code here..."
+      wrap="off"
     />
   );
 }
@@ -100,26 +210,52 @@ const App = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const serverUrl = process.env.REACT_APP_HASH_SERVER_URL;
-  const exampleKey = "FvBKNW"
+  const example = "info.md";
 
   const saveContent = async (hash) => {
-    const response = await fetch(`${serverUrl}/add`, {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ hash: hash }),
-    });
-    const { key } = await response.json();
-    return key;
+    try {
+      const response = await fetch(`${serverUrl}/add`, {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hash: hash }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const { key } = await response.json();
+      return key;
+    } catch (error) {
+      console.error('Error saving content:', error);
+      return null;
+    }
   };
 
   const loadContentByKey = async (key) => {
-    const response = await fetch(`${serverUrl}/${key}`);
-    const { hash } = await response.json();
-    if (hash) {
-      setContent(decodeContent(hash));
+    try {
+      const response = await fetch(`${serverUrl}/${key}`);
+      const { hash } = await await response.json();
+      if (hash) {
+        setContent(decodeContent(hash));
+      }
+    } catch (error) {
+      setContent('データを\nロード\nできません😢');
+    }
+  };
+
+  const loadStaticContent = async (fileName) => {
+    try {
+      const response = await fetch(`/${fileName}`);
+      if (response.ok) {
+        const text = await response.text();
+        setContent(text);
+      } else {
+        setContent('データを\nロード\nできません😢');
+      }
+    } catch (error) {
+      setContent('データを\nロード\nできません😢');
     }
   };
 
@@ -146,7 +282,7 @@ const App = () => {
       }
     }
     if (!key && !hash) {
-      loadContentByKey(exampleKey);
+      loadStaticContent(example);
     }
   }, []);
 
@@ -157,8 +293,10 @@ const App = () => {
       url = `${window.location.origin}/#${encodedContent}`;
       } else {
       const key = await saveContent(encodedContent);
-      url = `${window.location.origin}/${key}`;
-      increasePixela();
+      if (key) {
+        url = `${window.location.origin}/${key}`;
+        increasePixela();
+      }
     }
     if (url) {
       navigator.clipboard.writeText(url);
@@ -168,7 +306,7 @@ const App = () => {
   };
 
   const handleInfoButton = () => {
-    loadContentByKey(exampleKey);
+    loadStaticContent(example);
   }
 
   return (

@@ -1,0 +1,13 @@
+:root {
+  --size: 10dvw;
+  --line: 1.5;
+  --size-1: 0.75rem;
+  --size-2: 1.5rem;
+  --size-3: 2.0rem;
+  --size-4: 3.0rem;
+  --color: #263238;
+  --bg-color: #ffffff;
+  --em-color: #D32F2F;
+  --hl-color: rgba(251, 192, 45, 0.5);
+  --ul-color: #e35183;
+}

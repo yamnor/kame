@@ -1,0 +1,54 @@
+html {
+  font-size: var(--size);
+}
+
+.page {
+  font-size: var(--size);
+  line-height: var(--line);
+  color: var(--color);
+  background: var(--bg-color);
+}
+
+a {
+  color: var(--color);
+  text-decoration: none;
+  border-bottom: 10px dashed var(--ul-color);
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  max-width: 90dvw;
+  max-height: 90dvh;
+}
+
+em {
+  font-style: normal;
+  font-size: var(--size-1);
+}
+
+strong {
+  font-weight: normal;
+  font-size: var(--size-2);
+}
+
+:is(em strong, strong em) {
+  font-weight: normal;
+  font-size: var(--size-3);
+}
+
+strong strong {
+  font-weight: normal;
+  font-size: var(--size-4);
+}
+
+code {
+  color: var(--em-color);
+  font-family: var(--font-sans);
+}
+
+del {
+  display: inline-block;
+  text-decoration: none;
+  background: linear-gradient(to bottom, transparent 70%, var(--hl-color) 30%);
+}
