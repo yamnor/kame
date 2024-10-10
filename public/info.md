@@ -3,8 +3,6 @@ Kame🐢
 [紙芝居プレゼン](https://youtu.be/It_wBMcptS4?si=aJr01zBq1NQtLevg)
 エディター
 
-# コメント
-
 1行空けると
 次のスライド
 
