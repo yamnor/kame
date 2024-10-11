@@ -311,31 +311,33 @@ const App = () => {
 
   return (
     <main>
-      <div className='buttonContainer'>
-        {mode === 'view' ? (
-          <button onClick={() => setMode('code')}>
-            <Code size={28} />
-          </button>
-        ) : (
-          <button onClick={() => setMode('view')}>
-            <Eye size={28} />
-          </button>
-        )}
-        {isCopied ? (
-          <Tippy content="Copied!">
-            <button>
-              <Turtle size={28} />
+      <nav>
+        <div className='buttonContainer'>
+          {mode === 'view' ? (
+            <button onClick={() => setMode('code')}>
+              <Code size={28} />
             </button>
-          </Tippy>
-        ) : (
-          <button onClick={handleLinkButton}>
-            <Link size={28} />
+          ) : (
+            <button onClick={() => setMode('view')}>
+              <Eye size={28} />
+            </button>
+          )}
+          {isCopied ? (
+            <Tippy content="Copied!">
+              <button>
+                <Turtle size={28} />
+              </button>
+            </Tippy>
+          ) : (
+            <button onClick={handleLinkButton}>
+              <Link size={28} />
+            </button>
+          )}
+          <button onClick={handleInfoButton}>
+            <Info size={28} />
           </button>
-        )}
-        <button onClick={handleInfoButton}>
-          <Info size={28} />
-        </button>
-      </div>
+        </div>
+      </nav>
       {mode === 'view' ? (
         <ViewArea content={content} />
       ) : (

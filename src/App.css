@@ -3,7 +3,7 @@
   --grey: #a9a9a9;
   --lightgrey: #f5f5f5;
   --lightblue: #3E95BA;
-  --font-sans: "Yusei Magic", system-ui, sans-serif;
+  --font-sans: "Yusei Magic", "Noto Color Emoji", system-ui, sans-serif;
   --font-mono: "Noto Sans Mono", monospace;
   --font-size: 10vw;
 }
@@ -20,6 +20,8 @@
 
 html {
   font-family: var(--font-sans);
+  font-weight: 400;
+  font-style: normal;
   -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -59,15 +61,26 @@ div.page.active {
   display: flex;
 }
 
-.buttonContainer {
-  z-index: 100;
+nav {
   position: absolute;
-  top: 10px;
+  top: 8px;
   left: 0;
   width: 100dvw;
-  height: 50px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  margin: 0 auto;
+  width: 250px;
+  height: 54px;
   font-size: 0;
   line-height: 0;
+  border: 2px solid var(--grey);
+  background: #fff;
+  border-radius: 50px;
 }
 
 @media (hover: hover) {
@@ -84,19 +97,21 @@ button {
   margin: 0 15px;
   width: 50px;
   height: 50px;
-  border: 2px solid #fff;
+  border: none;
   border-radius: 50px;
   color: var(--black);
-  background-color: #fff;
+  background: none;
   cursor: pointer;
   position: relative;
   transition: color 0.5s, border 0.5s;
 }
 
 @media (hover: hover) {
+  button {
+    color: var(--grey);
+  }
   button:hover {
     color: var(--black);
-    border: 2px solid var(--black);
   }
 }
 
@@ -124,7 +139,7 @@ textarea {
     page-break-before: always;
     overflow: hidden;
   }
-  .buttonContainer {
+  nav {
     display: none;
   }
 }

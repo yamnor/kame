@@ -1,6 +1,6 @@
 Kame🐢
 
-[紙芝居プレゼン](https://youtu.be/It_wBMcptS4?si=aJr01zBq1NQtLevg)
+紙芝居プレゼン
 エディター
 
 1行空けると
@@ -28,7 +28,7 @@ Kame🐢
 
 > https://gyazo.com/c770db21bec077a62ac71a87661129d6.jpg
 
-リンク🔗
+URL🔗
 を送って
 シェア！
 
